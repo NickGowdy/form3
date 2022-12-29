@@ -12,11 +12,17 @@ import (
 const endpoint = "organisation/accounts"
 
 type API interface {
+	create() (http.Response, error)
 	fetch(id uuid.UUID) (http.Response, error)
 	delete(id uuid.UUID) (http.Response, error)
 }
 
 type Account struct {
+}
+
+// create implements API
+func (Account) create() (http.Response, error) {
+	panic("unimplemented")
 }
 
 // delete implements API

@@ -17,6 +17,10 @@ func TestHandleGetFooRR(t *testing.T) {
 	}
 
 	if (AccountData{}) == accData {
-		t.Error("account data should not be nil")
+		t.Errorf("account data should not be nil, but was %v", accData)
+	}
+
+	if accData.ID == "" {
+		t.Errorf("account id should not be nil, but was %s", accData.ID)
 	}
 }
