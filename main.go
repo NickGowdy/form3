@@ -1,51 +1,57 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/google/uuid"
 )
 
+const endpoint = "organisation/accounts"
+
 type API interface {
-	fetch() (http.Response, error)
-	delete() (http.Response, error)
+	fetch(id uuid.UUID) (http.Response, error)
+	delete(id uuid.UUID) (http.Response, error)
 }
 
-type AccountService struct {
-	id uuid.UUID
+type Account struct {
 }
 
-func (as AccountService) fetch() (http.Response, error) {
-	url := fmt.Sprintf("http://localhost:8080/v1/organisation/accounts/%s", as.id)
+// delete implements API
+func (Account) delete(id uuid.UUID) (http.Response, error) {
+	panic("unimplemented")
+}
+
+func (as Account) fetch(id uuid.UUID) (http.Response, error) {
+	url := fmt.Sprintf("http://localhost:8080/v1/%s/%s", endpoint, id)
 	fmt.Println(url)
 	resp, err := http.Get(url)
 
 	return *resp, err
 }
 
-// func (a AccountService) fetch() (AccountData, error) {
-// 	url := fmt.Sprintf("http://localhost:8080/v1/organisation/accounts/%s", a.id)
-// 	fmt.Println(url)
-// 	resp, err := http.Get(url)
-// 	var acc AccountResponse
-// 	if err != nil {
-// 		return *acc.AccountData, nil
-// 	}
+func Get(api API, id uuid.UUID) (AccountData, error) {
+	resp, err := api.fetch(id)
+	var acc AccountResponse
+	if err != nil {
+		return *acc.AccountData, nil
+	}
 
-// 	if err = json.NewDecoder(resp.Body).Decode(&acc); err != nil {
-// 		return *acc.AccountData, nil
-// 	}
+	if err = json.NewDecoder(resp.Body).Decode(&acc); err != nil {
+		return *acc.AccountData, nil
+	}
 
-// 	return *acc.AccountData, nil
-// }
+	return *acc.AccountData, nil
+}
 
 func main() {
-	// id, err := uuid.Parse("89faf3cd-fc6e-4e87-b930-00c182cafb05")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	id, err := uuid.Parse("89faf3cd-fc6e-4e87-b930-00c182cafb05")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// as := AccountService{id: id}
-	// as.fetch()
+	as := Account{}
+	Get(as, id)
 }
