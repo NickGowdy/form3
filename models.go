@@ -1,8 +1,9 @@
 package main
 
-// Account represents an account in the form3 org section.
-// See https://api-docs.form3.tech/api.html#organisation-accounts for
-// more information about fields.
+/*
+	All these models are used for creating/displaying
+	account data from the Form3 API
+*/
 
 type AccountResponse struct {
 	AccountData *AccountData  `json:"data"`
@@ -40,5 +41,5 @@ type AccountAttributes struct {
 }
 
 type AccountLinks struct {
-	Self *string
+	Self *string `json:"self,omitempty"`
 }
