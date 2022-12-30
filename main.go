@@ -86,6 +86,8 @@ func Create(api API, ar *AccountCreateRequest) (AccountData, error) {
 		return *acc.AccountData, nil
 	}
 
+	defer resp.Body.Close()
+
 	return *acc.AccountData, nil
 }
 
