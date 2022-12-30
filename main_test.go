@@ -54,4 +54,14 @@ func TestCreateFetchDelete(t *testing.T) {
 	if accData.ID == "" {
 		t.Errorf("account id should not be nil, but was %s", accData.ID)
 	}
+
+	isDeleted, err := Delete(as, createdAccData.ID, *createdAccData.Version)
+
+	if err != nil {
+		t.Error("error should not be nil")
+	}
+
+	if isDeleted != true {
+		t.Errorf("is deleted should be true, but was %v", isDeleted)
+	}
 }

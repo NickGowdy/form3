@@ -4,9 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 const endpoint = "organisation/accounts"
@@ -14,7 +13,7 @@ const endpoint = "organisation/accounts"
 type API interface {
 	create(*AccountCreateRequest) (http.Response, error)
 	fetch(id string) (http.Response, error)
-	delete(id uuid.UUID) (http.Response, error)
+	delete(id string, version int64) (http.Response, error)
 }
 
 type Account struct {
@@ -46,8 +45,19 @@ func (Account) create(ar *AccountCreateRequest) (http.Response, error) {
 }
 
 // delete implements API
-func (Account) delete(id uuid.UUID) (http.Response, error) {
-	panic("unimplemented")
+func (Account) delete(id string, version int64) (http.Response, error) {
+	url := fmt.Sprintf("http://localhost:8080/v1/%s/%s?version=%v", endpoint, id, version)
+	fmt.Println(url)
+	req, err := http.NewRequest(http.MethodDelete, url, nil)
+
+	if err != nil {
+		return http.Response{}, err
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
+	return *resp, err
 }
 
 func (as Account) fetch(id string) (http.Response, error) {
@@ -89,6 +99,16 @@ func Create(api API, ar *AccountCreateRequest) (AccountData, error) {
 	defer resp.Body.Close()
 
 	return *acc.AccountData, nil
+}
+
+func Delete(api API, id string, version int64) (bool, error) {
+	resp, err := api.delete(id, version)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	isSaved := resp.StatusCode == http.StatusNoContent
+	return isSaved, err
 }
 
 func main() {
