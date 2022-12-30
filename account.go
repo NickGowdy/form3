@@ -8,6 +8,8 @@ import (
 	"net/http"
 )
 
+const endpoint = "organisation/accounts"
+
 type Account struct {
 	Id                   string
 	Version              int64
@@ -15,9 +17,31 @@ type Account struct {
 	AccountCreateRequest AccountCreateRequest
 }
 
-const endpoint = "organisation/accounts"
+func DoFetch(api API) (AccountResponse, error) {
+	resp, err := api.fetch()
+	return decode(err, resp)
+}
 
-// create implements API
+func DoCreate(api API) (AccountResponse, error) {
+	resp, err := api.create()
+	return decode(err, resp)
+}
+
+func DoDelete(api API) (bool, error) {
+	resp, err := api.delete()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return resp.StatusCode == http.StatusNoContent, err
+}
+
+func (a Account) fetch() (http.Response, error) {
+	url := fmt.Sprintf("http://localhost:8080/v1/%s/%s", endpoint, a.Id)
+	resp, err := http.Get(url)
+
+	return *resp, err
+}
+
 func (a Account) create() (http.Response, error) {
 	url := fmt.Sprintf("http://localhost:8080/v1/%s", endpoint)
 	b := new(bytes.Buffer)
@@ -41,7 +65,6 @@ func (a Account) create() (http.Response, error) {
 	return *resp, err
 }
 
-// delete implements API
 func (a Account) delete() (http.Response, error) {
 	url := fmt.Sprintf("http://localhost:8080/v1/%s/%s?version=%v", endpoint, a.Id, a.Version)
 	req, err := http.NewRequest(http.MethodDelete, url, nil)
@@ -54,31 +77,6 @@ func (a Account) delete() (http.Response, error) {
 	resp, err := client.Do(req)
 
 	return *resp, err
-}
-
-func (a Account) fetch() (http.Response, error) {
-	url := fmt.Sprintf("http://localhost:8080/v1/%s/%s", endpoint, a.Id)
-	resp, err := http.Get(url)
-
-	return *resp, err
-}
-
-func DoFetch(api API) (AccountResponse, error) {
-	resp, err := api.fetch()
-	return decode(err, resp)
-}
-
-func DoCreate(api API) (AccountResponse, error) {
-	resp, err := api.create()
-	return decode(err, resp)
-}
-
-func DoDelete(api API) (bool, error) {
-	resp, err := api.delete()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return resp.StatusCode == http.StatusNoContent, err
 }
 
 func decode(err error, resp http.Response) (AccountResponse, error) {

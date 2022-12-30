@@ -33,8 +33,8 @@ func TestCreateFetchDelete(t *testing.T) {
 			Attributes:     &accAttributes,
 		}}
 
-	as := Account{}
-	createdAccResp, err := DoCreate(as, &accRequest)
+	as := Account{AccountCreateRequest: accRequest}
+	createdAccResp, err := DoCreate(as)
 
 	if err != nil {
 		t.Error("error should not be nil")
