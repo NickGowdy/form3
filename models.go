@@ -9,6 +9,10 @@ type AccountResponse struct {
 	Self        *AccountLinks `json:"self"`
 }
 
+type AccountCreateRequest struct {
+	AccountData *AccountData `json:"data"`
+}
+
 type AccountData struct {
 	Attributes     *AccountAttributes `json:"attributes,omitempty"`
 	ID             string             `json:"id,omitempty"`
