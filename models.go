@@ -6,8 +6,13 @@ package main
 */
 
 type AccountResponse struct {
-	AccountData *AccountData  `json:"data"`
-	Self        *AccountLinks `json:"self"`
+	AccountData  *AccountData  `json:"data"`
+	Self         *AccountLinks `json:"self"`
+	AccountError *AccountError
+}
+
+type AccountError struct {
+	ErrorMessage string `json:"error_message"`
 }
 
 type AccountCreateRequest struct {

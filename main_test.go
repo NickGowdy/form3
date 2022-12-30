@@ -67,3 +67,41 @@ func TestCreateFetchDelete(t *testing.T) {
 		t.Errorf("is deleted should be true, but was %v", isDeleted)
 	}
 }
+
+func TestCreateHandle400Errors(t *testing.T) {
+	id := uuid.NewString()
+	orgId := uuid.NewString()
+	accAttributes := AccountAttributes{}
+	country := "GB"
+
+	accRequest := AccountCreateRequest{
+		AccountData: &AccountData{
+			ID:             id,
+			OrganisationID: orgId,
+			Type:           "accounts",
+			Attributes:     &accAttributes,
+		}}
+
+	as := Account{AccountCreateRequest: accRequest}
+	createdAccResp, err := DoCreate(as)
+
+	if err != nil {
+		t.Error("error should not be nil")
+	}
+
+	if createdAccResp.AccountError.ErrorMessage != "validation failure list:\nvalidation failure list:\nvalidation failure list:\ncountry in body is required\nname in body is required" {
+		t.Errorf("error message should be: %s", createdAccResp.AccountError.ErrorMessage)
+	}
+
+	as.AccountCreateRequest.AccountData.Attributes.Country = &country
+
+	createdAccResp, err = DoCreate(as)
+
+	if err != nil {
+		t.Error("error should not be nil")
+	}
+
+	if createdAccResp.AccountError.ErrorMessage != "validation failure list:\nvalidation failure list:\nvalidation failure list:\nname in body is required" {
+		t.Errorf("error message should be: %s", createdAccResp.AccountError.ErrorMessage)
+	}
+}

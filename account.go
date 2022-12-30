@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 )
@@ -74,15 +73,15 @@ func (a Account) delete() (http.Response, error) {
 
 func decode(err error, resp http.Response) (AccountResponse, error) {
 	var acc AccountResponse
+	var accErr AccountError
 
 	switch resp.StatusCode {
 	case 400:
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatalln(err)
+		if err = json.NewDecoder(resp.Body).Decode(&accErr); err != nil {
+			return acc, err
 		}
-
-		fmt.Println(body)
+		acc.AccountError = &accErr
+		return acc, nil
 	}
 
 	if err != nil {
