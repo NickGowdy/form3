@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 )
@@ -13,7 +14,6 @@ const endpoint = "organisation/accounts"
 type Account struct {
 	Id                   string
 	Version              int64
-	Error                error
 	AccountCreateRequest AccountCreateRequest
 }
 
@@ -55,13 +55,6 @@ func (a Account) create() (http.Response, error) {
 		return http.Response{}, err
 	}
 
-	// body, err := ioutil.ReadAll(resp.Body)
-	// if err != nil {
-	// 	log.Fatalln(err)
-	// }
-
-	// fmt.Println(body)
-
 	return *resp, err
 }
 
@@ -81,6 +74,17 @@ func (a Account) delete() (http.Response, error) {
 
 func decode(err error, resp http.Response) (AccountResponse, error) {
 	var acc AccountResponse
+
+	switch resp.StatusCode {
+	case 400:
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		fmt.Println(body)
+	}
+
 	if err != nil {
 		return acc, nil
 	}
