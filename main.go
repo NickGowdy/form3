@@ -47,7 +47,6 @@ func (Account) create(ar *AccountCreateRequest) (http.Response, error) {
 // delete implements API
 func (Account) delete(id string, version int64) (http.Response, error) {
 	url := fmt.Sprintf("http://localhost:8080/v1/%s/%s?version=%v", endpoint, id, version)
-	fmt.Println(url)
 	req, err := http.NewRequest(http.MethodDelete, url, nil)
 
 	if err != nil {
@@ -62,43 +61,35 @@ func (Account) delete(id string, version int64) (http.Response, error) {
 
 func (as Account) fetch(id string) (http.Response, error) {
 	url := fmt.Sprintf("http://localhost:8080/v1/%s/%s", endpoint, id)
-	fmt.Println(url)
 	resp, err := http.Get(url)
 
 	return *resp, err
 }
 
-func Get(api API, id string) (AccountData, error) {
+func Fetch(api API, id string) (AccountResponse, error) {
 	resp, err := api.fetch(id)
-	var acc AccountResponse
-	if err != nil {
-		return *acc.AccountData, nil
-	}
-
-	if err = json.NewDecoder(resp.Body).Decode(&acc); err != nil {
-		return *acc.AccountData, nil
-	}
-
-	defer resp.Body.Close()
-
-	return *acc.AccountData, nil
+	return decode(err, resp)
 }
 
-func Create(api API, ar *AccountCreateRequest) (AccountData, error) {
+func Create(api API, ar *AccountCreateRequest) (AccountResponse, error) {
 	resp, err := api.create(ar)
 
+	return decode(err, resp)
+}
+
+func decode(err error, resp http.Response) (AccountResponse, error) {
 	var acc AccountResponse
 	if err != nil {
-		return *acc.AccountData, nil
+		return acc, nil
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(&acc); err != nil {
-		return *acc.AccountData, nil
+		return acc, nil
 	}
 
 	defer resp.Body.Close()
 
-	return *acc.AccountData, nil
+	return acc, nil
 }
 
 func Delete(api API, id string, version int64) (bool, error) {
@@ -107,16 +98,8 @@ func Delete(api API, id string, version int64) (bool, error) {
 		log.Fatal(err)
 	}
 
-	isSaved := resp.StatusCode == http.StatusNoContent
-	return isSaved, err
+	return resp.StatusCode == http.StatusNoContent, err
 }
 
 func main() {
-	// id, err := uuid.Parse("89faf3cd-fc6e-4e87-b930-00c182cafb05")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// as := Account{}
-	// Get(as, id)
 }

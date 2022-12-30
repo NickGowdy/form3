@@ -34,28 +34,28 @@ func TestCreateFetchDelete(t *testing.T) {
 		}}
 
 	as := Account{}
-	createdAccData, err := Create(as, &accRequest)
+	createdAccResp, err := Create(as, &accRequest)
 
 	if err != nil {
 		t.Error("error should not be nil")
 	}
 
-	id = createdAccData.ID
-	accData, err := Get(as, id)
+	id = createdAccResp.AccountData.ID
+	accData, err := Fetch(as, id)
 
 	if err != nil {
 		t.Error("error should not be nil")
 	}
 
-	if (AccountData{}) == accData {
+	if (AccountResponse{}) == accData {
 		t.Errorf("account data should not be nil, but was %v", accData)
 	}
 
-	if accData.ID == "" {
-		t.Errorf("account id should not be nil, but was %s", accData.ID)
+	if accData.AccountData.ID == "" {
+		t.Errorf("account id should not be nil, but was %s", accData.AccountData.ID)
 	}
 
-	isDeleted, err := Delete(as, createdAccData.ID, *createdAccData.Version)
+	isDeleted, err := Delete(as, createdAccResp.AccountData.ID, *createdAccResp.AccountData.Version)
 
 	if err != nil {
 		t.Error("error should not be nil")
