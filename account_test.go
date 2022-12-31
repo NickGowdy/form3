@@ -69,6 +69,28 @@ func TestCreateFetchDelete(t *testing.T) {
 	}
 }
 
+func TestFetchAccountDontExist(t *testing.T) {
+	id := uuid.NewString()
+	as := Account{Id: id, Version: 0}
+	_, err := DoFetch(as)
+
+	expected := fmt.Sprintf("record %s does not exist", id)
+	if fmt.Sprint(err) != expected {
+		t.Errorf("error message should be: %s", expected)
+	}
+}
+
+func TestDeleteAccountDontExist(t *testing.T) {
+	id := uuid.NewString()
+	as := Account{Id: id, Version: 0}
+	_, err := DoDelete(as)
+
+	expected := fmt.Sprintf("record %s does not exist", id)
+	if fmt.Sprint(err) != expected {
+		t.Errorf("error message should be: %s", expected)
+	}
+}
+
 func TestCreateInvalidAccountDataFields(t *testing.T) {
 	id := uuid.NewString()
 	orgId := uuid.NewString()
@@ -118,7 +140,7 @@ func TestCreateInvalidAccountDataFields(t *testing.T) {
 	}
 }
 
-func TestCreateInvalidAccounAttributeFields(t *testing.T) {
+func TestCreateInvalidAccountAttributeFields(t *testing.T) {
 	id := uuid.NewString()
 	orgId := uuid.NewString()
 	country := "GB"
@@ -199,5 +221,4 @@ func TestCreateDuplicateAccount(t *testing.T) {
 	if fmt.Sprint(err) != expected {
 		t.Errorf("error message should be: %s", expected)
 	}
-
 }

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -28,9 +27,7 @@ func DoCreate(f Form3) (AccountResponse, error) {
 
 func DoDelete(f Form3) (bool, error) {
 	resp, err := f.delete()
-	if err != nil {
-		log.Fatal(err)
-	}
+
 	return resp.StatusCode == http.StatusNoContent, err
 }
 
@@ -68,6 +65,10 @@ func (a Account) delete() (http.Response, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 
+	if resp.StatusCode == http.StatusNotFound {
+		return *resp, fmt.Errorf(fmt.Sprintf("record %s does not exist", a.Id))
+	}
+
 	return *resp, err
 }
 
@@ -76,7 +77,7 @@ func decode(err error, resp http.Response) (AccountResponse, error) {
 	var accErr AccountError
 
 	switch resp.StatusCode {
-	case 400, 409:
+	case 400, 404, 409:
 		if err = json.NewDecoder(resp.Body).Decode(&accErr); err != nil {
 			return acc, err
 		}
