@@ -16,18 +16,18 @@ type Account struct {
 	AccountCreateRequest AccountCreateRequest
 }
 
-func DoFetch(api API) (AccountResponse, error) {
-	resp, err := api.fetch()
+func DoFetch(f Form3) (AccountResponse, error) {
+	resp, err := f.fetch()
 	return decode(err, resp)
 }
 
-func DoCreate(api API) (AccountResponse, error) {
-	resp, err := api.create()
+func DoCreate(f Form3) (AccountResponse, error) {
+	resp, err := f.create()
 	return decode(err, resp)
 }
 
-func DoDelete(api API) (bool, error) {
-	resp, err := api.delete()
+func DoDelete(f Form3) (bool, error) {
+	resp, err := f.delete()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -80,8 +80,8 @@ func decode(err error, resp http.Response) (AccountResponse, error) {
 		if err = json.NewDecoder(resp.Body).Decode(&accErr); err != nil {
 			return acc, err
 		}
-		acc.AccountError = &accErr
-		return acc, nil
+
+		return acc, fmt.Errorf(accErr.ErrorMessage)
 	}
 
 	if err != nil {
