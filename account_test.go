@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/uuid"
@@ -37,24 +38,24 @@ func TestCreateFetchDelete(t *testing.T) {
 	createdAccResp, err := DoCreate(as)
 
 	if err != nil {
-		t.Error("error should not be nil")
+		t.Error("error should be nil")
 	}
 
 	as.Id = createdAccResp.AccountData.ID
 	as.Version = *createdAccResp.AccountData.Version
 
-	accData, err := DoFetch(as)
+	accResp, err := DoFetch(as)
 
 	if err != nil {
 		t.Error("error should not be nil")
 	}
 
-	if (AccountResponse{}) == accData {
-		t.Errorf("account data should not be nil, but was %v", accData)
+	if (AccountResponse{}) == accResp {
+		t.Errorf("account response should not empty")
 	}
 
-	if accData.AccountData.ID == "" {
-		t.Errorf("account id should not be nil, but was %s", accData.AccountData.ID)
+	if accResp.AccountData.ID == "" {
+		t.Errorf("account id should not be nil, but was %s", accResp.AccountData.ID)
 	}
 
 	isDeleted, err := DoDelete(as)
@@ -68,40 +69,92 @@ func TestCreateFetchDelete(t *testing.T) {
 	}
 }
 
-func TestCreateHandle400Errors(t *testing.T) {
+func TestCreateInvalidAccountDataFields(t *testing.T) {
 	id := uuid.NewString()
 	orgId := uuid.NewString()
 	accAttributes := AccountAttributes{}
+
+	accRequest := AccountCreateRequest{
+		AccountData: &AccountData{}}
+
+	as := Account{AccountCreateRequest: accRequest}
+	_, err := DoCreate(as)
+	expected := "validation failure list:\nvalidation failure list:\nattributes in body is required\nid in body is required\norganisation_id in body is required\ntype in body is required"
+
+	if fmt.Sprint(err) != expected {
+		t.Errorf("error message should be: %s", expected)
+	}
+
+	as.AccountCreateRequest.AccountData.ID = id
+	_, err = DoCreate(as)
+	expected = "validation failure list:\nvalidation failure list:\nattributes in body is required\norganisation_id in body is required\ntype in body is required"
+
+	if fmt.Sprint(err) != expected {
+		t.Errorf("error message should be: %s", expected)
+	}
+
+	as.AccountCreateRequest.AccountData.OrganisationID = orgId
+	_, err = DoCreate(as)
+	expected = "validation failure list:\nvalidation failure list:\nattributes in body is required\ntype in body is required"
+
+	if fmt.Sprint(err) != expected {
+		t.Errorf("error message should be: %s", expected)
+	}
+
+	as.AccountCreateRequest.AccountData.Type = "accounts"
+	_, err = DoCreate(as)
+	expected = "validation failure list:\nvalidation failure list:\nattributes in body is required"
+
+	if fmt.Sprint(err) != expected {
+		t.Errorf("error message should be: %s", expected)
+	}
+
+	as.AccountCreateRequest.AccountData.Attributes = &accAttributes
+	_, err = DoCreate(as)
+	expected = "validation failure list:\nvalidation failure list:\nvalidation failure list:\ncountry in body is required\nname in body is required"
+
+	if fmt.Sprint(err) != expected {
+		t.Errorf("error message should be: %s", expected)
+	}
+}
+
+func TestCreateInvalidAccounAttributeFields(t *testing.T) {
+	id := uuid.NewString()
+	orgId := uuid.NewString()
 	country := "GB"
+	name := []string{"Nick", "Gowdy"}
 
 	accRequest := AccountCreateRequest{
 		AccountData: &AccountData{
 			ID:             id,
 			OrganisationID: orgId,
 			Type:           "accounts",
-			Attributes:     &accAttributes,
+			Attributes:     &AccountAttributes{},
 		}}
 
 	as := Account{AccountCreateRequest: accRequest}
-	createdAccResp, err := DoCreate(as)
+	_, err := DoCreate(as)
+	expected := "validation failure list:\nvalidation failure list:\nvalidation failure list:\ncountry in body is required\nname in body is required"
 
+	if fmt.Sprint(err) != expected {
+		t.Errorf("error message should be: %s", expected)
+	}
+
+	accRequest.AccountData.Attributes.Country = &country
+	_, err = DoCreate(as)
+	expected = "validation failure list:\nvalidation failure list:\nvalidation failure list:\nname in body is required"
+
+	if fmt.Sprint(err) != expected {
+		t.Errorf("error message should be: %s", expected)
+	}
+
+	accRequest.AccountData.Attributes.Name = name
+	accResp, err := DoCreate(as)
 	if err != nil {
-		t.Error("error should not be nil")
+		t.Error("error should be nil")
 	}
 
-	if createdAccResp.AccountError.ErrorMessage != "validation failure list:\nvalidation failure list:\nvalidation failure list:\ncountry in body is required\nname in body is required" {
-		t.Errorf("error message should be: %s", createdAccResp.AccountError.ErrorMessage)
-	}
-
-	as.AccountCreateRequest.AccountData.Attributes.Country = &country
-
-	createdAccResp, err = DoCreate(as)
-
-	if err != nil {
-		t.Error("error should not be nil")
-	}
-
-	if createdAccResp.AccountError.ErrorMessage != "validation failure list:\nvalidation failure list:\nvalidation failure list:\nname in body is required" {
-		t.Errorf("error message should be: %s", createdAccResp.AccountError.ErrorMessage)
+	if (AccountResponse{}) == accResp {
+		t.Errorf("account response should not empty")
 	}
 }
