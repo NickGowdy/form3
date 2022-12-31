@@ -16,3 +16,6 @@
 
 # Debugging in vscode
 launch.json
+
+#Environment files
+.env
