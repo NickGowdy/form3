@@ -158,3 +158,46 @@ func TestCreateInvalidAccounAttributeFields(t *testing.T) {
 		t.Errorf("account response should not empty")
 	}
 }
+
+func TestCreateDuplicateAccount(t *testing.T) {
+	id := uuid.NewString()
+	orgId := uuid.NewString()
+	country := "GB"
+	accClassification := "Personal"
+	accAttributes := AccountAttributes{
+		AccountClassification:   &accClassification,
+		AccountNumber:           "10000004",
+		BankID:                  "400302",
+		BankIDCode:              "GBDSC",
+		BaseCurrency:            "GBP",
+		Bic:                     "NWBKGB42",
+		Country:                 &country,
+		Iban:                    "GB28NWBK40030212764204",
+		JointAccount:            new(bool),
+		Name:                    []string{"Nick", "Gowdy"},
+		SecondaryIdentification: id,
+	}
+
+	accRequest := AccountCreateRequest{
+		AccountData: &AccountData{
+			ID:             id,
+			OrganisationID: orgId,
+			Type:           "accounts",
+			Attributes:     &accAttributes,
+		}}
+
+	as := Account{AccountCreateRequest: accRequest}
+	_, err := DoCreate(as)
+
+	if err != nil {
+		t.Error("error should be nil")
+	}
+
+	_, err = DoCreate(as)
+
+	expected := "Account cannot be created as it violates a duplicate constraint"
+	if fmt.Sprint(err) != expected {
+		t.Errorf("error message should be: %s", expected)
+	}
+
+}

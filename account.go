@@ -76,7 +76,7 @@ func decode(err error, resp http.Response) (AccountResponse, error) {
 	var accErr AccountError
 
 	switch resp.StatusCode {
-	case 400:
+	case 400, 409:
 		if err = json.NewDecoder(resp.Body).Decode(&accErr); err != nil {
 			return acc, err
 		}
