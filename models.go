@@ -6,9 +6,9 @@ package main
 */
 
 type AccountResponse struct {
-	AccountData  *AccountData  `json:"data"`
-	Self         *AccountLinks `json:"self"`
-	AccountError *AccountError
+	AccountData *AccountData  `json:"data"`
+	Self        *AccountLinks `json:"self"`
+	// AccountError *AccountError
 }
 
 type AccountError struct {
