@@ -16,16 +16,34 @@ type Account struct {
 	AccountCreateRequest AccountCreateRequest
 }
 
+// DoFetch calls the Form3 API and returns an account response
+// containing account bank details.
+//
+// An account is fetched using the account Id and account version.
+// If the account isn't fetched, an error will be returned instead
+// and the account response struct will be nil.
 func DoFetch(f Form3) (AccountResponse, error) {
 	resp, err := f.fetch()
 	return decode(err, resp)
 }
 
+// DoCreate calls the Form3 API and returns an account response
+// containing account bank details.
+//
+// A new account is saved using an Account struct with an
+// AccountCreateRequest. If creating an account is unsuccessful,
+// an error will be returned with the missing values, for example:
+// "validation failure list:\nvalidation failure list:\nattributes in body is required"
 func DoCreate(f Form3) (AccountResponse, error) {
 	resp, err := f.create()
 	return decode(err, resp)
 }
 
+// DoDelete calls the Form3 API and returns a bool
+// for successful deletion.
+//
+// An account is deleted using the account Id and account version.
+// If the account isn't deleted, an error will be returned instead.
 func DoDelete(f Form3) (bool, error) {
 	resp, err := f.delete()
 
