@@ -88,6 +88,8 @@ func (a Account) delete() (http.Response, error) {
 		return *resp, fmt.Errorf(fmt.Sprintf("record %s does not exist", a.Id))
 	}
 
+	defer resp.Body.Close()
+
 	return *resp, err
 }
 
