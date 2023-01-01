@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 )
 
-const endpoint = "organisation/accounts"
+const resource = "organisation/accounts"
 
 type Account struct {
 	Id                   string
@@ -32,14 +33,14 @@ func DoDelete(f Form3) (bool, error) {
 }
 
 func (a Account) fetch() (http.Response, error) {
-	url := fmt.Sprintf("http://localhost:8080/v1/%s/%s", endpoint, a.Id)
+	url := fmt.Sprintf("%s/%s/%s", os.Getenv("BASE_URL"), resource, a.Id)
 	resp, err := http.Get(url)
 
 	return *resp, err
 }
 
 func (a Account) create() (http.Response, error) {
-	url := fmt.Sprintf("http://localhost:8080/v1/%s", endpoint)
+	url := fmt.Sprintf("%s/%s/%s", os.Getenv("BASE_URL"), resource, a.Id)
 	b := new(bytes.Buffer)
 	err := json.NewEncoder(b).Encode(&a.AccountCreateRequest)
 	if err != nil {
@@ -55,7 +56,7 @@ func (a Account) create() (http.Response, error) {
 }
 
 func (a Account) delete() (http.Response, error) {
-	url := fmt.Sprintf("http://localhost:8080/v1/%s/%s?version=%v", endpoint, a.Id, a.Version)
+	url := fmt.Sprintf("%s/%s/%s?version=%v", os.Getenv("BASE_URL"), resource, a.Id, a.Version)
 	req, err := http.NewRequest(http.MethodDelete, url, nil)
 
 	if err != nil {
