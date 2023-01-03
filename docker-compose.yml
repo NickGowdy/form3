@@ -6,9 +6,12 @@ services:
       context: .
       dockerfile: dockerfile
      depends_on:
-      - postgresql
-      - vault
-      - accountapi
+      accountapi:
+        condition: service_started
+      postgresql:
+        condition: service_started
+      vault:
+        condition: service_started
      volumes:
       - .:/clientlibrary
      environment:
