@@ -8,8 +8,8 @@ import (
 )
 
 func TestCreateFetchDelete(t *testing.T) {
-	id := uuid.NewString()
-	orgId := uuid.NewString()
+	id := generateId()
+	orgId := generateId()
 	country := "GB"
 	accClassification := "Personal"
 	accAttributes := AccountAttributes{
@@ -70,7 +70,7 @@ func TestCreateFetchDelete(t *testing.T) {
 }
 
 func TestFetchAccountDontExist(t *testing.T) {
-	id := uuid.NewString()
+	id := generateId()
 	as := Account{Id: id, Version: 0}
 	_, err := DoFetch(as)
 
@@ -81,13 +81,9 @@ func TestFetchAccountDontExist(t *testing.T) {
 }
 
 func TestDeleteAccountDontExist(t *testing.T) {
-	id := uuid.NewString()
+	id := generateId()
 	as := Account{Id: id, Version: 0}
 	_, err := DoDelete(as)
-
-	if err != nil {
-		t.Errorf("error should be nil, but is: %s", err)
-	}
 
 	expected := fmt.Sprintf("record %s does not exist", id)
 	if fmt.Sprint(err) != expected {
@@ -96,8 +92,8 @@ func TestDeleteAccountDontExist(t *testing.T) {
 }
 
 func TestCreateInvalidAccountDataFields(t *testing.T) {
-	id := uuid.NewString()
-	orgId := uuid.NewString()
+	id := generateId()
+	orgId := generateId()
 	accAttributes := AccountAttributes{}
 
 	accRequest := AccountCreateRequest{
@@ -105,10 +101,6 @@ func TestCreateInvalidAccountDataFields(t *testing.T) {
 
 	as := Account{AccountCreateRequest: accRequest}
 	_, err := DoCreate(as)
-
-	if err != nil {
-		t.Errorf("error should be nil, but is: %s", err)
-	}
 
 	expected := "validation failure list:\nvalidation failure list:\nattributes in body is required\nid in body is required\norganisation_id in body is required\ntype in body is required"
 
@@ -150,8 +142,8 @@ func TestCreateInvalidAccountDataFields(t *testing.T) {
 }
 
 func TestCreateInvalidAccountAttributeFields(t *testing.T) {
-	id := uuid.NewString()
-	orgId := uuid.NewString()
+	id := generateId()
+	orgId := generateId()
 	country := "GB"
 	name := []string{"Nick", "Gowdy"}
 
@@ -165,10 +157,6 @@ func TestCreateInvalidAccountAttributeFields(t *testing.T) {
 
 	as := Account{AccountCreateRequest: accRequest}
 	_, err := DoCreate(as)
-
-	if err != nil {
-		t.Errorf("error should be nil, but is: %s", err)
-	}
 
 	expected := "validation failure list:\nvalidation failure list:\nvalidation failure list:\ncountry in body is required\nname in body is required"
 
@@ -196,8 +184,8 @@ func TestCreateInvalidAccountAttributeFields(t *testing.T) {
 }
 
 func TestCreateDuplicateAccount(t *testing.T) {
-	id := uuid.NewString()
-	orgId := uuid.NewString()
+	id := generateId()
+	orgId := generateId()
 	country := "GB"
 	accClassification := "Personal"
 	accAttributes := AccountAttributes{
@@ -235,4 +223,10 @@ func TestCreateDuplicateAccount(t *testing.T) {
 	if fmt.Sprint(err) != expected {
 		t.Errorf("error message should be: %s", expected)
 	}
+}
+
+func generateId() string {
+	uuid, _ := uuid.NewRandom()
+	id := (uuid).String()
+	return id
 }
