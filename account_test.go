@@ -38,7 +38,7 @@ func TestCreateFetchDelete(t *testing.T) {
 	createdAccResp, err := DoCreate(as)
 
 	if err != nil {
-		t.Error("error should be nil")
+		t.Errorf("error should be nil, but is: %s", err)
 	}
 
 	as.Id = createdAccResp.AccountData.ID
@@ -47,7 +47,7 @@ func TestCreateFetchDelete(t *testing.T) {
 	accResp, err := DoFetch(as)
 
 	if err != nil {
-		t.Error("error should not be nil")
+		t.Errorf("error should be nil, but is: %s", err)
 	}
 
 	if (AccountResponse{}) == accResp {
@@ -61,7 +61,7 @@ func TestCreateFetchDelete(t *testing.T) {
 	isDeleted, err := DoDelete(as)
 
 	if err != nil {
-		t.Error("error should not be nil")
+		t.Errorf("error should be nil, but is: %s", err)
 	}
 
 	if isDeleted != true {
@@ -85,6 +85,10 @@ func TestDeleteAccountDontExist(t *testing.T) {
 	as := Account{Id: id, Version: 0}
 	_, err := DoDelete(as)
 
+	if err != nil {
+		t.Errorf("error should be nil, but is: %s", err)
+	}
+
 	expected := fmt.Sprintf("record %s does not exist", id)
 	if fmt.Sprint(err) != expected {
 		t.Errorf("error message should be: %s", expected)
@@ -101,6 +105,11 @@ func TestCreateInvalidAccountDataFields(t *testing.T) {
 
 	as := Account{AccountCreateRequest: accRequest}
 	_, err := DoCreate(as)
+
+	if err != nil {
+		t.Errorf("error should be nil, but is: %s", err)
+	}
+
 	expected := "validation failure list:\nvalidation failure list:\nattributes in body is required\nid in body is required\norganisation_id in body is required\ntype in body is required"
 
 	if fmt.Sprint(err) != expected {
@@ -156,6 +165,11 @@ func TestCreateInvalidAccountAttributeFields(t *testing.T) {
 
 	as := Account{AccountCreateRequest: accRequest}
 	_, err := DoCreate(as)
+
+	if err != nil {
+		t.Errorf("error should be nil, but is: %s", err)
+	}
+
 	expected := "validation failure list:\nvalidation failure list:\nvalidation failure list:\ncountry in body is required\nname in body is required"
 
 	if fmt.Sprint(err) != expected {
@@ -212,7 +226,7 @@ func TestCreateDuplicateAccount(t *testing.T) {
 	_, err := DoCreate(as)
 
 	if err != nil {
-		t.Error("error should be nil")
+		t.Errorf("error should be nil, but is: %s", err)
 	}
 
 	_, err = DoCreate(as)
