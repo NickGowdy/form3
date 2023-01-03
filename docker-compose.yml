@@ -12,8 +12,8 @@ services:
      volumes:
       - .:/clientlibrary
      environment:
-       MY_SECRET_KEY: http://localhost:8080/v1
-     command: "go test ./..."
+       BASE_URL: http://localhost:8080/v1
+     command: "go test -v ./..."
 
   accountapi:
     image: form3tech/interview-accountapi:v1.0.0-46-gb3b6c766
