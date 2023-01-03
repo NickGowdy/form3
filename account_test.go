@@ -37,17 +37,17 @@ func TestCreateFetchDelete(t *testing.T) {
 			Attributes:     &accAttributes,
 		}}
 
-	as := Account{AccountCreateRequest: accRequest}
-	createdAccResp, err := DoCreate(as)
+	account := Account{AccountCreateRequest: accRequest}
+	createdAccResp, err := DoCreate(account)
 
 	if err != nil {
 		t.Errorf("error should be nil, but is: %s", err)
 	}
 
-	as.Id = createdAccResp.AccountData.ID
-	as.Version = *createdAccResp.AccountData.Version
+	account.Id = createdAccResp.AccountData.ID
+	account.Version = *createdAccResp.AccountData.Version
 
-	accResp, err := DoFetch(as)
+	accResp, err := DoFetch(account)
 
 	if err != nil {
 		t.Errorf("error should be nil, but is: %s", err)
@@ -61,7 +61,7 @@ func TestCreateFetchDelete(t *testing.T) {
 		t.Errorf("account id should not be nil, but was %s", accResp.AccountData.ID)
 	}
 
-	isDeleted, err := DoDelete(as)
+	isDeleted, err := DoDelete(account)
 
 	if err != nil {
 		t.Errorf("error should be nil, but is: %s", err)
@@ -89,8 +89,8 @@ func TestDeleteAccountDontExist(t *testing.T) {
 	godotenv.Load()
 
 	id := generateId()
-	as := Account{Id: id, Version: 0}
-	_, err := DoDelete(as)
+	account := Account{Id: id, Version: 0}
+	_, err := DoDelete(account)
 
 	expected := fmt.Sprintf("record %s does not exist", id)
 	if fmt.Sprint(err) != expected {
@@ -108,8 +108,8 @@ func TestCreateInvalidAccountDataFields(t *testing.T) {
 	accRequest := AccountCreateRequest{
 		AccountData: &AccountData{}}
 
-	as := Account{AccountCreateRequest: accRequest}
-	_, err := DoCreate(as)
+	account := Account{AccountCreateRequest: accRequest}
+	_, err := DoCreate(account)
 
 	expected := "validation failure list:\nvalidation failure list:\nattributes in body is required\nid in body is required\norganisation_id in body is required\ntype in body is required"
 
@@ -117,32 +117,32 @@ func TestCreateInvalidAccountDataFields(t *testing.T) {
 		t.Errorf("error message should be: %s", expected)
 	}
 
-	as.AccountCreateRequest.AccountData.ID = id
-	_, err = DoCreate(as)
+	account.AccountCreateRequest.AccountData.ID = id
+	_, err = DoCreate(account)
 	expected = "validation failure list:\nvalidation failure list:\nattributes in body is required\norganisation_id in body is required\ntype in body is required"
 
 	if fmt.Sprint(err) != expected {
 		t.Errorf("error message should be: %s", expected)
 	}
 
-	as.AccountCreateRequest.AccountData.OrganisationID = orgId
-	_, err = DoCreate(as)
+	account.AccountCreateRequest.AccountData.OrganisationID = orgId
+	_, err = DoCreate(account)
 	expected = "validation failure list:\nvalidation failure list:\nattributes in body is required\ntype in body is required"
 
 	if fmt.Sprint(err) != expected {
 		t.Errorf("error message should be: %s", expected)
 	}
 
-	as.AccountCreateRequest.AccountData.Type = "accounts"
-	_, err = DoCreate(as)
+	account.AccountCreateRequest.AccountData.Type = "accounts"
+	_, err = DoCreate(account)
 	expected = "validation failure list:\nvalidation failure list:\nattributes in body is required"
 
 	if fmt.Sprint(err) != expected {
 		t.Errorf("error message should be: %s", expected)
 	}
 
-	as.AccountCreateRequest.AccountData.Attributes = &accAttributes
-	_, err = DoCreate(as)
+	account.AccountCreateRequest.AccountData.Attributes = &accAttributes
+	_, err = DoCreate(account)
 	expected = "validation failure list:\nvalidation failure list:\nvalidation failure list:\ncountry in body is required\nname in body is required"
 
 	if fmt.Sprint(err) != expected {
@@ -166,8 +166,8 @@ func TestCreateInvalidAccountAttributeFields(t *testing.T) {
 			Attributes:     &AccountAttributes{},
 		}}
 
-	as := Account{AccountCreateRequest: accRequest}
-	_, err := DoCreate(as)
+	account := Account{AccountCreateRequest: accRequest}
+	_, err := DoCreate(account)
 
 	expected := "validation failure list:\nvalidation failure list:\nvalidation failure list:\ncountry in body is required\nname in body is required"
 
@@ -176,7 +176,7 @@ func TestCreateInvalidAccountAttributeFields(t *testing.T) {
 	}
 
 	accRequest.AccountData.Attributes.Country = &country
-	_, err = DoCreate(as)
+	_, err = DoCreate(account)
 	expected = "validation failure list:\nvalidation failure list:\nvalidation failure list:\nname in body is required"
 
 	if fmt.Sprint(err) != expected {
@@ -184,7 +184,7 @@ func TestCreateInvalidAccountAttributeFields(t *testing.T) {
 	}
 
 	accRequest.AccountData.Attributes.Name = name
-	accResp, err := DoCreate(as)
+	accResp, err := DoCreate(account)
 	if err != nil {
 		t.Error("error should be nil")
 	}
@@ -223,14 +223,14 @@ func TestCreateDuplicateAccount(t *testing.T) {
 			Attributes:     &accAttributes,
 		}}
 
-	as := Account{AccountCreateRequest: accRequest}
-	_, err := DoCreate(as)
+	account := Account{AccountCreateRequest: accRequest}
+	_, err := DoCreate(account)
 
 	if err != nil {
 		t.Errorf("error should be nil, but is: %s", err)
 	}
 
-	_, err = DoCreate(as)
+	_, err = DoCreate(account)
 
 	expected := "Account cannot be created as it violates a duplicate constraint"
 	if fmt.Sprint(err) != expected {
