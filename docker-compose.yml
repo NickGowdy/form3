@@ -12,7 +12,7 @@ services:
      volumes:
       - .:/clientlibrary
      environment:
-       BASE_URL: http://localhost:8080/v1
+       BASE_URL: http://accountapi:8080/v1
      command: "go test -v ./..."
 
   accountapi:
