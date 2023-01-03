@@ -5,9 +5,12 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 )
 
 func TestCreateFetchDelete(t *testing.T) {
+	godotenv.Load()
+
 	id := generateId()
 	orgId := generateId()
 	country := "GB"
@@ -70,6 +73,8 @@ func TestCreateFetchDelete(t *testing.T) {
 }
 
 func TestFetchAccountDontExist(t *testing.T) {
+	godotenv.Load()
+
 	id := generateId()
 	as := Account{Id: id, Version: 0}
 	_, err := DoFetch(as)
@@ -81,6 +86,8 @@ func TestFetchAccountDontExist(t *testing.T) {
 }
 
 func TestDeleteAccountDontExist(t *testing.T) {
+	godotenv.Load()
+
 	id := generateId()
 	as := Account{Id: id, Version: 0}
 	_, err := DoDelete(as)
@@ -92,6 +99,8 @@ func TestDeleteAccountDontExist(t *testing.T) {
 }
 
 func TestCreateInvalidAccountDataFields(t *testing.T) {
+	godotenv.Load()
+
 	id := generateId()
 	orgId := generateId()
 	accAttributes := AccountAttributes{}
@@ -142,6 +151,8 @@ func TestCreateInvalidAccountDataFields(t *testing.T) {
 }
 
 func TestCreateInvalidAccountAttributeFields(t *testing.T) {
+	godotenv.Load()
+
 	id := generateId()
 	orgId := generateId()
 	country := "GB"
@@ -184,6 +195,8 @@ func TestCreateInvalidAccountAttributeFields(t *testing.T) {
 }
 
 func TestCreateDuplicateAccount(t *testing.T) {
+	godotenv.Load()
+
 	id := generateId()
 	orgId := generateId()
 	country := "GB"
