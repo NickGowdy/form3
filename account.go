@@ -24,6 +24,11 @@ type Account struct {
 // and the account response struct will be nil.
 func DoFetch(f Form3) (AccountResponse, error) {
 	resp, err := f.fetch()
+
+	if err != nil {
+		return AccountResponse{}, err
+	}
+
 	return decode(err, resp)
 }
 
@@ -36,6 +41,11 @@ func DoFetch(f Form3) (AccountResponse, error) {
 // "validation failure list:\nvalidation failure list:\nattributes in body is required"
 func DoCreate(f Form3) (AccountResponse, error) {
 	resp, err := f.create()
+
+	if err != nil {
+		return AccountResponse{}, err
+	}
+
 	return decode(err, resp)
 }
 
@@ -46,6 +56,10 @@ func DoCreate(f Form3) (AccountResponse, error) {
 // If the account isn't deleted, an error will be returned instead.
 func DoDelete(f Form3) (bool, error) {
 	resp, err := f.delete()
+
+	if err != nil {
+		return false, err
+	}
 
 	return resp.StatusCode == http.StatusNoContent, err
 }
