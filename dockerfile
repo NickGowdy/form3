@@ -1,9 +1,22 @@
-FROM golang:alpine
+FROM golang:1.12-alpine
+
+RUN apk add alpine-sdk
 ENV CGO_ENABLED=0
 
-WORKDIR /app
+# Set the Current Working Directory inside the container
+WORKDIR /app/go-sample-app
+
+# We want to populate the module cache based on the go.{mod,sum} files.
+COPY go.mod .
+COPY go.sum .
+
+RUN go mod download
+
 COPY . .
 
-RUN go build -o clientlibrary .
+# Build the Go app
+RUN go build -o ./clientlibrary .
 
-CMD [ "./clientlibrary" ]
+# Run the binary program produced by `go install`
+CMD ["./clientlibrary"]
+
