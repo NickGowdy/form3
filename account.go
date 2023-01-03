@@ -64,6 +64,13 @@ func DoDelete(f Form3) (bool, error) {
 	return resp.StatusCode == http.StatusNoContent, err
 }
 
+func (a Account) ping() (bool, error) {
+	url := fmt.Sprintf("%s/%s/", os.Getenv("BASE_URL"), resource)
+	resp, err := http.Get(url)
+
+	return resp.StatusCode == http.StatusOK, err
+}
+
 func (a Account) fetch() (http.Response, error) {
 	url := fmt.Sprintf("%s/%s/%s", os.Getenv("BASE_URL"), resource, a.Id)
 	resp, err := http.Get(url)
