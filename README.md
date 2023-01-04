@@ -94,6 +94,4 @@ this approach as it reminds me of the Open/Closed principle in SOLID, and it als
 
 I would then write unit tests for each country for `Fetch` `Create` and `Delete` to make sure it works for each country
 correctly.
-
-Another thing I might add would be an `Update` function, it's absent from this programming exercise and wasn't a requirement.
 </p>
