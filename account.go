@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -18,7 +19,7 @@ func GenerateId() string {
 	return id
 }
 
-// NewCreateAccount creates an Account struct for creating an account record
+// NewCreateAccount creates an Account struct for creating a new account record
 func NewCreateAccount(version int64, accType string, accAttributes *AccountAttributes) *Account {
 	return &Account{
 		AccountCreateRequest: AccountCreateRequest{AccountData: &AccountData{
@@ -31,7 +32,7 @@ func NewCreateAccount(version int64, accType string, accAttributes *AccountAttri
 	}
 }
 
-// NewCreateAccount creates an Account struct for fetching an account record
+// NewFetchAccount creates an Account struct for fetching an account record
 func NewFetchAccount(id string, version int64) *Account {
 	return &Account{
 		Id:      id,
@@ -39,7 +40,7 @@ func NewFetchAccount(id string, version int64) *Account {
 	}
 }
 
-// NewCreateAccount creates an Account struct for fetching an account record
+// NewDeleteAccount creates an Account struct for deleting an account record
 func NewDeleteAccount(id string, version int64) *Account {
 	return &Account{
 		Id:      id,
@@ -53,14 +54,16 @@ func NewDeleteAccount(id string, version int64) *Account {
 // An account is fetched using the account Id and account version.
 // If the account isn't fetched, an error will be returned instead
 // and the account response struct will be nil.
-func DoFetch(f Form3) (AccountResponse, error) {
+func DoFetch(f Form3) (*AccountResponse, error) {
 	resp, err := f.fetch()
 
 	if err != nil {
-		return AccountResponse{}, err
+		log.Fatal(err)
+		return nil, err
 	}
 
-	return decode(err, resp)
+	ar, err := decode(err, &resp)
+	return &ar, err
 }
 
 // DoCreate calls the Form3 API and returns an account response
@@ -70,14 +73,16 @@ func DoFetch(f Form3) (AccountResponse, error) {
 // AccountCreateRequest. If creating an account is unsuccessful,
 // an error will be returned with the missing values, for example:
 // "validation failure list:\nvalidation failure list:\nattributes in body is required"
-func DoCreate(f Form3) (AccountResponse, error) {
+func DoCreate(f Form3) (*AccountResponse, error) {
 	resp, err := f.create()
 
 	if err != nil {
-		return AccountResponse{}, err
+		log.Fatal(err)
+		return nil, err
 	}
 
-	return decode(err, resp)
+	ar, err := decode(err, &resp)
+	return &ar, err
 }
 
 // DoDelete calls the Form3 API and returns a bool
@@ -145,7 +150,7 @@ func (a Account) delete() (http.Response, error) {
 	return *resp, err
 }
 
-func decode(err error, resp http.Response) (AccountResponse, error) {
+func decode(err error, resp *http.Response) (AccountResponse, error) {
 	var acc AccountResponse
 	var accErr AccountError
 
