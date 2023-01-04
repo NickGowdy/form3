@@ -14,8 +14,7 @@ This can be done with the following steps:
 
 - Download Docker [here](https://www.docker.com/), select your OS and install it to your local machine.
 - Verify Docker is running via this command: `docker -v` (You should see your Docker version).
-- Type the command `docker-compose up -d` which will load all the service integrations that you need running locally.
-- Then type `docker-compose run clientlibrary` which will run the Form3 Client Library with it's unit tests to confirm the integrations are configured correctly.
+- Type the command `docker-compose up ` which will load all the service integrations and run the unit tests (This may take a minute because of the API health check).
 </p>
 
 <p>You can also run this application locally using the Golang CLI but you will still need Docker to run the services declared in `docker-compose.
