@@ -81,5 +81,19 @@ isDeleted, err := DoDelete(account)
 ```
 
 Fetch will return an `AccountResponse` and Delete will return a truthy of `true` is account was deleted successfully.
+</p>
 
+## Further improvements
+
+<p>
+Currently the logic is written to handle GB accounts. If I were to work on this further I would refactor
+the models so there are structs for different country accounts as each country has different business rules.
+
+This is why I made `type Form3 interface` generic, each country struct can reuse the same interface. I prefer 
+this approach as it reminds me of the Open/Closed principle in SOLID, and it also makes the code more polymorphic.
+
+I would then write unit tests for each country for `Fetch` `Create` and `Delete` to make sure it works for each country
+correctly.
+
+Another thing I might add would be an `Update` function, it's absent from this programming exercise and wasn't a requirement.
 </p>
