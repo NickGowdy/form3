@@ -2,6 +2,13 @@
 <p>This is a client library used to access the Form3 Account API. It provides a common interface for fetching, 
 creating and deleting account records.</p>
 
+<p>This code was written by <strong>Nick Gowdy</strong>, I'm a software engineer with around 10 years of experience (mostly with .net stack) but I've been learning Golang on/off for the past year.</p>
+
+<p>I'm really passionate about becoming a Golang engineer. I like that it's not bloated with features like other languages, it's error handling and that it's statically typed. If you look at my git commit history, you will see I've been working on this code for about a week while I'm on my holidays. I tried to make this test as professional as possible and easy to run.
+
+Anyway I hope you like what I've written and I look forward to your feedback :D
+</p>
+
 
 [<img src="./images/form3.png"  width="600"/>](./images/form3.png)
 
