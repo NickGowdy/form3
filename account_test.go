@@ -4,49 +4,35 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 )
 
 func TestCreateFetchDelete(t *testing.T) {
 	godotenv.Load()
 
-	id := generateId()
-	orgId := generateId()
 	country := "GB"
 	accClassification := "Personal"
 	accAttributes := AccountAttributes{
-		AccountClassification:   &accClassification,
-		AccountNumber:           "10000004",
-		BankID:                  "400302",
-		BankIDCode:              "GBDSC",
-		BaseCurrency:            "GBP",
-		Bic:                     "NWBKGB42",
-		Country:                 &country,
-		Iban:                    "GB28NWBK40030212764204",
-		JointAccount:            new(bool),
-		Name:                    []string{"Nick", "Gowdy"},
-		SecondaryIdentification: id,
+		AccountClassification: &accClassification,
+		AccountNumber:         "10000004",
+		BankID:                "400302",
+		BankIDCode:            "GBDSC",
+		BaseCurrency:          "GBP",
+		Bic:                   "NWBKGB42",
+		Country:               &country,
+		Iban:                  "GB28NWBK40030212764204",
+		JointAccount:          new(bool),
+		Name:                  []string{"Nick", "Gowdy"},
 	}
 
-	accRequest := AccountCreateRequest{
-		AccountData: &AccountData{
-			ID:             id,
-			OrganisationID: orgId,
-			Type:           "accounts",
-			Attributes:     &accAttributes,
-		}}
-
-	account := Account{AccountCreateRequest: accRequest}
+	account := NewCreateAccount(0, "accounts", &accAttributes)
 	createdAccResp, err := DoCreate(account)
 
 	if err != nil {
 		t.Errorf("error should be nil, but is: %s", err)
 	}
 
-	account.Id = createdAccResp.AccountData.ID
-	account.Version = *createdAccResp.AccountData.Version
-
+	account = NewFetchAccount(createdAccResp.AccountData.ID, *createdAccResp.AccountData.Version)
 	accResp, err := DoFetch(account)
 
 	if err != nil {
@@ -61,6 +47,7 @@ func TestCreateFetchDelete(t *testing.T) {
 		t.Errorf("account id should not be nil, but was %s", accResp.AccountData.ID)
 	}
 
+	account = NewDeleteAccount(createdAccResp.AccountData.ID, *createdAccResp.AccountData.Version)
 	isDeleted, err := DoDelete(account)
 
 	if err != nil {
@@ -75,9 +62,9 @@ func TestCreateFetchDelete(t *testing.T) {
 func TestFetchAccountDontExist(t *testing.T) {
 	godotenv.Load()
 
-	id := generateId()
-	as := Account{Id: id, Version: 0}
-	_, err := DoFetch(as)
+	id := GenerateId()
+	account := NewFetchAccount(id, 0)
+	_, err := DoFetch(account)
 
 	expected := fmt.Sprintf("record %s does not exist", id)
 	if fmt.Sprint(err) != expected {
@@ -88,8 +75,8 @@ func TestFetchAccountDontExist(t *testing.T) {
 func TestDeleteAccountDontExist(t *testing.T) {
 	godotenv.Load()
 
-	id := generateId()
-	account := Account{Id: id, Version: 0}
+	id := GenerateId()
+	account := NewDeleteAccount(id, 0)
 	_, err := DoDelete(account)
 
 	expected := fmt.Sprintf("record %s does not exist", id)
@@ -101,8 +88,8 @@ func TestDeleteAccountDontExist(t *testing.T) {
 func TestCreateInvalidAccountDataFields(t *testing.T) {
 	godotenv.Load()
 
-	id := generateId()
-	orgId := generateId()
+	id := GenerateId()
+	orgId := GenerateId()
 	accAttributes := AccountAttributes{}
 
 	accRequest := AccountCreateRequest{
@@ -153,8 +140,8 @@ func TestCreateInvalidAccountDataFields(t *testing.T) {
 func TestCreateInvalidAccountAttributeFields(t *testing.T) {
 	godotenv.Load()
 
-	id := generateId()
-	orgId := generateId()
+	id := GenerateId()
+	orgId := GenerateId()
 	country := "GB"
 	name := []string{"Nick", "Gowdy"}
 
@@ -197,8 +184,8 @@ func TestCreateInvalidAccountAttributeFields(t *testing.T) {
 func TestCreateDuplicateAccount(t *testing.T) {
 	godotenv.Load()
 
-	id := generateId()
-	orgId := generateId()
+	id := GenerateId()
+	orgId := GenerateId()
 	country := "GB"
 	accClassification := "Personal"
 	accAttributes := AccountAttributes{
@@ -236,10 +223,4 @@ func TestCreateDuplicateAccount(t *testing.T) {
 	if fmt.Sprint(err) != expected {
 		t.Errorf("error message should be: %s", expected)
 	}
-}
-
-func generateId() string {
-	uuid, _ := uuid.NewRandom()
-	id := (uuid).String()
-	return id
 }

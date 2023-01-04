@@ -6,14 +6,45 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+
+	"github.com/google/uuid"
 )
 
 const resource = "organisation/accounts"
 
-type Account struct {
-	Id                   string
-	Version              int64
-	AccountCreateRequest AccountCreateRequest
+func GenerateId() string {
+	uuid, _ := uuid.NewRandom()
+	id := (uuid).String()
+	return id
+}
+
+// NewCreateAccount creates an Account struct for creating an account record
+func NewCreateAccount(version int64, accType string, accAttributes *AccountAttributes) *Account {
+	return &Account{
+		AccountCreateRequest: AccountCreateRequest{AccountData: &AccountData{
+			ID:             GenerateId(),
+			OrganisationID: GenerateId(),
+			Version:        &version,
+			Attributes:     accAttributes,
+			Type:           accType,
+		}},
+	}
+}
+
+// NewCreateAccount creates an Account struct for fetching an account record
+func NewFetchAccount(id string, version int64) *Account {
+	return &Account{
+		Id:      id,
+		Version: version,
+	}
+}
+
+// NewCreateAccount creates an Account struct for fetching an account record
+func NewDeleteAccount(id string, version int64) *Account {
+	return &Account{
+		Id:      id,
+		Version: version,
+	}
 }
 
 // DoFetch calls the Form3 API and returns an account response
