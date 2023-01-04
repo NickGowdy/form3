@@ -4,7 +4,7 @@ RUN apk add alpine-sdk
 ENV CGO_ENABLED=0
 
 # Set the Current Working Directory inside the container
-WORKDIR /app/go-sample-app
+WORKDIR /app/form3-clientlibrary
 
 # We want to populate the module cache based on the go.{mod,sum} files.
 COPY go.mod .
