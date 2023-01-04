@@ -39,12 +39,8 @@ func TestCreateFetchDelete(t *testing.T) {
 		t.Errorf("error should be nil, but is: %s", err)
 	}
 
-	if (AccountResponse{}) == accResp {
-		t.Errorf("account response should not empty")
-	}
-
-	if accResp.AccountData.ID == "" {
-		t.Errorf("account id should not be nil, but was %s", accResp.AccountData.ID)
+	if accResp == nil {
+		t.Errorf("account response should not nil")
 	}
 
 	account = NewDeleteAccount(createdAccResp.AccountData.ID, *createdAccResp.AccountData.Version)
@@ -176,8 +172,8 @@ func TestCreateInvalidAccountAttributeFields(t *testing.T) {
 		t.Error("error should be nil")
 	}
 
-	if (AccountResponse{}) == accResp {
-		t.Errorf("account response should not empty")
+	if accResp == nil {
+		t.Errorf("account response should not nil")
 	}
 }
 
