@@ -58,7 +58,6 @@ func DoFetch(f Form3) (*AccountResponse, error) {
 	resp, err := f.fetch()
 
 	if err != nil {
-		log.Fatal(err)
 		return nil, err
 	}
 
@@ -77,7 +76,6 @@ func DoCreate(f Form3) (*AccountResponse, error) {
 	resp, err := f.create()
 
 	if err != nil {
-		log.Fatal(err)
 		return nil, err
 	}
 
@@ -104,12 +102,20 @@ func (a Account) ping() (bool, error) {
 	url := fmt.Sprintf("%s/%s/", os.Getenv("BASE_URL"), resource)
 	resp, err := http.Get(url)
 
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return resp.StatusCode == http.StatusOK, err
 }
 
 func (a Account) fetch() (http.Response, error) {
 	url := fmt.Sprintf("%s/%s/%s", os.Getenv("BASE_URL"), resource, a.Id)
 	resp, err := http.Get(url)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	return *resp, err
 }
@@ -118,12 +124,16 @@ func (a Account) create() (http.Response, error) {
 	url := fmt.Sprintf("%s/%s/%s", os.Getenv("BASE_URL"), resource, a.Id)
 	b := new(bytes.Buffer)
 	err := json.NewEncoder(b).Encode(&a.AccountCreateRequest)
+
 	if err != nil {
+		log.Fatal(err)
 		return http.Response{}, err
 	}
 
 	resp, err := http.Post(url, "application/json", b)
+
 	if err != nil {
+		log.Fatal(err)
 		return http.Response{}, err
 	}
 
@@ -135,6 +145,7 @@ func (a Account) delete() (http.Response, error) {
 	req, err := http.NewRequest(http.MethodDelete, url, nil)
 
 	if err != nil {
+		log.Fatal(err)
 		return http.Response{}, err
 	}
 
@@ -157,6 +168,7 @@ func decode(err error, resp *http.Response) (AccountResponse, error) {
 	switch resp.StatusCode {
 	case 400, 404, 409:
 		if err = json.NewDecoder(resp.Body).Decode(&accErr); err != nil {
+			log.Fatal(err)
 			return acc, err
 		}
 
@@ -164,6 +176,7 @@ func decode(err error, resp *http.Response) (AccountResponse, error) {
 	}
 
 	if err != nil {
+		log.Fatal(err)
 		return acc, nil
 	}
 

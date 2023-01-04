@@ -14,13 +14,14 @@ This can be done with the following steps:
 
 - Download Docker [here](https://www.docker.com/), select your OS and install it to your local machine.
 - Verify Docker is running via this command: `docker -v` (You should see your Docker version).
-- Type the command `docker-compose up ` which will load all the service integrations and run the unit tests (This may take a minute because of the API health check).
+- Type the command `docker-compose up` which will load all the service integrations and run the unit tests (This may take a minute because of the API health check).
 </p>
 
 <p>You can also run this application locally using the Golang CLI but you will still need Docker to run the services declared in `docker-compose.
 This can be done with these steps:
 
 - Download Docker as described above.
+- Run `docker-compose up d` so containers are loaded in detached mode.
 - Go to the Golang official site [here](https://go.dev/) to download the SDK/CLI.
 - Verify Go has been installed successfully with this command: `go -v` to check the Golang version.
 - Create a new `.env` file in the root of the project and add this line to it: `BASE_URL=http://localhost:8080/v1`
