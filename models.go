@@ -5,6 +5,12 @@ package main
 	account data from the Form3 API
 */
 
+type Account struct {
+	Id                   string
+	Version              int64
+	AccountCreateRequest AccountCreateRequest
+}
+
 type AccountResponse struct {
 	AccountData *AccountData  `json:"data"`
 	Self        *AccountLinks `json:"self"`
