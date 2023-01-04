@@ -4,6 +4,11 @@ services:
   accountapi:
     image: form3tech/interview-accountapi:v1.0.0-46-gb3b6c766
     restart: on-failure
+    healthcheck:
+       test: [ "CMD", "wget", "http://localhost:8080/v1/health" ]
+       timeout: 45s
+       interval: 10s
+       retries: 10
     depends_on:
       - postgresql
       - vault
@@ -44,13 +49,13 @@ services:
      build:
       context: .
       dockerfile: dockerfile
-     depends_on:
-      - accountapi
-      - postgresql
-      - vault
+     
      volumes:
       - .:/clientlibrary
      environment:
        BASE_URL: http://accountapi:8080/v1
      command: "go test -v ./..."
      restart: on-failure
+     depends_on:
+       accountapi:
+        condition: service_healthy
