@@ -162,6 +162,7 @@ func (a Account) delete() (http.Response, error) {
 }
 
 func decode(err error, resp *http.Response) (AccountResponse, error) {
+	defer resp.Body.Close()
 	var acc AccountResponse
 	var accErr AccountError
 
@@ -183,8 +184,6 @@ func decode(err error, resp *http.Response) (AccountResponse, error) {
 	if err = json.NewDecoder(resp.Body).Decode(&acc); err != nil {
 		return acc, nil
 	}
-
-	defer resp.Body.Close()
 
 	return acc, nil
 }
