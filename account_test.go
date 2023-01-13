@@ -25,14 +25,14 @@ func TestCreateFetchDelete(t *testing.T) {
 		Name:                  []string{"Nick", "Gowdy"},
 	}
 
-	account := NewCreateAccount(0, "accounts", &accAttributes)
+	account := NewCreateAccount(0, "accounts", &accAttributes, 30)
 	createdAccResp, err := DoCreate(account)
 
 	if err != nil {
 		t.Errorf("error should be nil, but is: %s", err)
 	}
 
-	account = NewFetchAccount(createdAccResp.AccountData.ID, *createdAccResp.AccountData.Version)
+	account = NewFetchAccount(createdAccResp.AccountData.ID, *createdAccResp.AccountData.Version, 30)
 	accResp, err := DoFetch(account)
 
 	if err != nil {
@@ -43,7 +43,7 @@ func TestCreateFetchDelete(t *testing.T) {
 		t.Errorf("account response should not nil")
 	}
 
-	account = NewDeleteAccount(createdAccResp.AccountData.ID, *createdAccResp.AccountData.Version)
+	account = NewDeleteAccount(createdAccResp.AccountData.ID, *createdAccResp.AccountData.Version, 30)
 	isDeleted, err := DoDelete(account)
 
 	if err != nil {
@@ -59,7 +59,7 @@ func TestFetchAccountDontExist(t *testing.T) {
 	godotenv.Load()
 
 	id := GenerateId()
-	account := NewFetchAccount(id, 0)
+	account := NewFetchAccount(id, 0, 30)
 	_, err := DoFetch(account)
 
 	expected := fmt.Sprintf("record %s does not exist", id)
@@ -72,7 +72,7 @@ func TestDeleteAccountDontExist(t *testing.T) {
 	godotenv.Load()
 
 	id := GenerateId()
-	account := NewDeleteAccount(id, 0)
+	account := NewDeleteAccount(id, 0, 30)
 	_, err := DoDelete(account)
 
 	expected := fmt.Sprintf("record %s does not exist", id)

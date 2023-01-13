@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -20,8 +21,9 @@ func GenerateId() string {
 }
 
 // NewCreateAccount creates an Account struct for creating a new account record
-func NewCreateAccount(version int64, accType string, accAttributes *AccountAttributes) *Account {
+func NewCreateAccount(version int64, accType string, accAttributes *AccountAttributes, timeout int32) *Account {
 	return &Account{
+		Client: http.Client{Timeout: time.Duration(time.Second * time.Duration(timeout))},
 		AccountCreateRequest: AccountCreateRequest{AccountData: &AccountData{
 			ID:             GenerateId(),
 			OrganisationID: GenerateId(),
@@ -33,16 +35,18 @@ func NewCreateAccount(version int64, accType string, accAttributes *AccountAttri
 }
 
 // NewFetchAccount creates an Account struct for fetching an account record
-func NewFetchAccount(id string, version int64) *Account {
+func NewFetchAccount(id string, version int64, timeout int32) *Account {
 	return &Account{
+		Client:  http.Client{Timeout: time.Duration(time.Second * time.Duration(timeout))},
 		Id:      id,
 		Version: version,
 	}
 }
 
 // NewDeleteAccount creates an Account struct for deleting an account record
-func NewDeleteAccount(id string, version int64) *Account {
+func NewDeleteAccount(id string, version int64, timeout int32) *Account {
 	return &Account{
+		Client:  http.Client{Timeout: time.Duration(time.Second * time.Duration(timeout))},
 		Id:      id,
 		Version: version,
 	}
@@ -100,7 +104,7 @@ func DoDelete(f Form3) (bool, error) {
 
 func (a Account) ping() (bool, error) {
 	url := fmt.Sprintf("%s/%s/", os.Getenv("BASE_URL"), resource)
-	resp, err := http.Get(url)
+	resp, err := a.Client.Get(url)
 
 	if err != nil {
 		log.Fatal(err)
@@ -111,7 +115,7 @@ func (a Account) ping() (bool, error) {
 
 func (a Account) fetch() (http.Response, error) {
 	url := fmt.Sprintf("%s/%s/%s", os.Getenv("BASE_URL"), resource, a.Id)
-	resp, err := http.Get(url)
+	resp, err := a.Client.Get(url)
 
 	if err != nil {
 		log.Fatal(err)
@@ -130,7 +134,7 @@ func (a Account) create() (http.Response, error) {
 		return http.Response{}, err
 	}
 
-	resp, err := http.Post(url, "application/json", b)
+	resp, err := a.Client.Post(url, "application/json", b)
 
 	if err != nil {
 		log.Fatal(err)
@@ -149,8 +153,7 @@ func (a Account) delete() (http.Response, error) {
 		return http.Response{}, err
 	}
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := a.Client.Do(req)
 
 	if resp.StatusCode == http.StatusNotFound {
 		return *resp, fmt.Errorf(fmt.Sprintf("record %s does not exist", a.Id))
