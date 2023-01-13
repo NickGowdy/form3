@@ -1,5 +1,7 @@
 package main
 
+import "net/http"
+
 /*
 	All these models are used for creating/displaying
 	account data from the Form3 API
@@ -9,6 +11,7 @@ type Account struct {
 	Id                   string
 	Version              int64
 	AccountCreateRequest AccountCreateRequest
+	http.Client
 }
 
 type AccountResponse struct {
