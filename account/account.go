@@ -1,4 +1,4 @@
-package main
+package account
 
 import (
 	"bytes"
@@ -52,6 +52,13 @@ func NewDeleteAccount(id string, version int64, timeout int32) *Account {
 	}
 }
 
+// NewDeleteAccount creates an Account struct for deleting an account record
+func NewPing(timeout int32) *Account {
+	return &Account{
+		Client: http.Client{Timeout: time.Duration(time.Second * time.Duration(timeout))},
+	}
+}
+
 // DoFetch calls the Form3 API and returns an account response
 // containing account bank details.
 //
@@ -100,6 +107,11 @@ func DoDelete(f Form3) (bool, error) {
 	}
 
 	return resp.StatusCode == http.StatusNoContent, err
+}
+
+// DoPing checks that a connection is available from the API
+func DoPing(f Form3) (bool, error) {
+	return f.ping()
 }
 
 func (a Account) ping() (bool, error) {

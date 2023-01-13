@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/nickgowdy/form3/account"
 )
 
 func main() {
@@ -21,8 +22,8 @@ func checkEnv() {
 }
 
 func pingServer() {
-	as := Account{}
-	resp, err := as.ping()
+	as := account.NewPing(30)
+	resp, err := account.DoPing(as)
 
 	if err != nil || !resp {
 		panic(err)
