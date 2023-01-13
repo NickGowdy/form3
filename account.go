@@ -169,8 +169,8 @@ func decode(err error, resp *http.Response) (AccountResponse, error) {
 	var acc AccountResponse
 	var accErr AccountError
 
-	switch resp.StatusCode {
-	case 400, 404, 409:
+	switch statusCode := resp.StatusCode; {
+	case statusCode > 399 && statusCode < 500:
 		if err = json.NewDecoder(resp.Body).Decode(&accErr); err != nil {
 			log.Fatal(err)
 			return acc, err
