@@ -72,7 +72,7 @@ func TestCreateFetchDelete(t *testing.T) {
 func TestFetchAccountDontExist(t *testing.T) {
 	godotenv.Load()
 
-	id := GenerateId()
+	id := generateId()
 	account := NewFetchAccount(id, 0, 30)
 	_, err := DoFetch(account)
 
@@ -85,7 +85,7 @@ func TestFetchAccountDontExist(t *testing.T) {
 func TestDeleteAccountDontExist(t *testing.T) {
 	godotenv.Load()
 
-	id := GenerateId()
+	id := generateId()
 	account := NewDeleteAccount(id, 0, 30)
 	_, err := DoDelete(account)
 
@@ -98,12 +98,12 @@ func TestDeleteAccountDontExist(t *testing.T) {
 func TestCreateInvalidAccountDataFields(t *testing.T) {
 	godotenv.Load()
 
-	id := GenerateId()
-	orgId := GenerateId()
+	id := generateId()
+	orgId := generateId()
 	accAttributes := AccountAttributes{}
 
-	accRequest := AccountCreateRequest{
-		AccountData: &AccountData{}}
+	accRequest := accountCreateRequest{
+		AccountData: &accountData{}}
 
 	account := Account{AccountCreateRequest: accRequest}
 	_, err := DoCreate(account)
@@ -150,13 +150,13 @@ func TestCreateInvalidAccountDataFields(t *testing.T) {
 func TestCreateInvalidAccountAttributeFields(t *testing.T) {
 	godotenv.Load()
 
-	id := GenerateId()
-	orgId := GenerateId()
+	id := generateId()
+	orgId := generateId()
 	country := "GB"
 	name := []string{"Nick", "Gowdy"}
 
-	accRequest := AccountCreateRequest{
-		AccountData: &AccountData{
+	accRequest := accountCreateRequest{
+		AccountData: &accountData{
 			ID:             id,
 			OrganisationID: orgId,
 			Type:           "accounts",
@@ -194,8 +194,8 @@ func TestCreateInvalidAccountAttributeFields(t *testing.T) {
 func TestCreateDuplicateAccount(t *testing.T) {
 	godotenv.Load()
 
-	id := GenerateId()
-	orgId := GenerateId()
+	id := generateId()
+	orgId := generateId()
 	country := "GB"
 	accClassification := "Personal"
 	accAttributes := AccountAttributes{
@@ -212,8 +212,8 @@ func TestCreateDuplicateAccount(t *testing.T) {
 		SecondaryIdentification: id,
 	}
 
-	accRequest := AccountCreateRequest{
-		AccountData: &AccountData{
+	accRequest := accountCreateRequest{
+		AccountData: &accountData{
 			ID:             id,
 			OrganisationID: orgId,
 			Type:           "accounts",

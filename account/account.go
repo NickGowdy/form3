@@ -14,7 +14,7 @@ import (
 
 const resource = "organisation/accounts"
 
-func GenerateId() string {
+func generateId() string {
 	uuid, _ := uuid.NewRandom()
 	id := (uuid).String()
 	return id
@@ -24,9 +24,9 @@ func GenerateId() string {
 func NewCreateAccount(version int64, accType string, accAttributes *AccountAttributes, timeout int32) *Account {
 	return &Account{
 		Client: http.Client{Timeout: time.Duration(time.Second * time.Duration(timeout))},
-		AccountCreateRequest: AccountCreateRequest{AccountData: &AccountData{
-			ID:             GenerateId(),
-			OrganisationID: GenerateId(),
+		AccountCreateRequest: accountCreateRequest{AccountData: &accountData{
+			ID:             generateId(),
+			OrganisationID: generateId(),
 			Version:        &version,
 			Attributes:     accAttributes,
 			Type:           accType,
@@ -65,7 +65,7 @@ func NewPing(timeout int32) *Account {
 // An account is fetched using the account Id and account version.
 // If the account isn't fetched, an error will be returned instead
 // and the account response struct will be nil.
-func DoFetch(f Form3) (*AccountResponse, error) {
+func DoFetch(f Form3) (*accountResponse, error) {
 	resp, err := f.fetch()
 
 	if err != nil {
@@ -83,7 +83,7 @@ func DoFetch(f Form3) (*AccountResponse, error) {
 // AccountCreateRequest. If creating an account is unsuccessful,
 // an error will be returned with the missing values, for example:
 // "validation failure list:\nvalidation failure list:\nattributes in body is required"
-func DoCreate(f Form3) (*AccountResponse, error) {
+func DoCreate(f Form3) (*accountResponse, error) {
 	resp, err := f.create()
 
 	if err != nil {
@@ -173,9 +173,9 @@ func (a Account) delete() (http.Response, error) {
 	return *resp, err
 }
 
-func decode(err error, resp *http.Response) (AccountResponse, error) {
+func decode(err error, resp *http.Response) (accountResponse, error) {
 	defer resp.Body.Close()
-	var acc AccountResponse
+	var acc accountResponse
 	var accErr AccountError
 
 	switch statusCode := resp.StatusCode; {

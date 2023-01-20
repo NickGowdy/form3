@@ -10,24 +10,24 @@ import "net/http"
 type Account struct {
 	Id                   string
 	Version              int64
-	AccountCreateRequest AccountCreateRequest
+	AccountCreateRequest accountCreateRequest
 	http.Client
 }
 
-type AccountResponse struct {
-	AccountData *AccountData  `json:"data"`
-	Self        *AccountLinks `json:"self"`
+type accountResponse struct {
+	AccountData *accountData  `json:"data"`
+	Self        *accountLinks `json:"self"`
 }
 
 type AccountError struct {
 	ErrorMessage string `json:"error_message"`
 }
 
-type AccountCreateRequest struct {
-	AccountData *AccountData `json:"data"`
+type accountCreateRequest struct {
+	AccountData *accountData `json:"data"`
 }
 
-type AccountData struct {
+type accountData struct {
 	Attributes     *AccountAttributes `json:"attributes,omitempty"`
 	ID             string             `json:"id,omitempty"`
 	OrganisationID string             `json:"organisation_id,omitempty"`
@@ -53,6 +53,6 @@ type AccountAttributes struct {
 	Switched                *bool    `json:"switched,omitempty"`
 }
 
-type AccountLinks struct {
+type accountLinks struct {
 	Self *string `json:"self,omitempty"`
 }
