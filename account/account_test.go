@@ -2,13 +2,15 @@ package account
 
 import (
 	"fmt"
+	"os"
+	"reflect"
 	"testing"
 
 	"github.com/joho/godotenv"
 )
 
 func TestCreateFetchDelete(t *testing.T) {
-	godotenv.Load()
+	os.Setenv("BASE_URL", "http://localhost:8080/v1")
 
 	country := "GB"
 	accClassification := "Personal"
@@ -41,6 +43,18 @@ func TestCreateFetchDelete(t *testing.T) {
 
 	if accResp == nil {
 		t.Errorf("account response should not nil")
+	}
+
+	if !reflect.DeepEqual(createdAccResp.AccountData.Attributes.AccountNumber, "10000004") {
+		t.Errorf("got %v want %v", createdAccResp.AccountData.Attributes.AccountNumber, "10000004")
+	}
+
+	if !reflect.DeepEqual(createdAccResp.AccountData.Attributes.BankID, "400302") {
+		t.Errorf("got %v want %v", createdAccResp.AccountData.Attributes.BankID, "400302")
+	}
+
+	if !reflect.DeepEqual(createdAccResp.AccountData.Attributes.BankIDCode, "GBDSC") {
+		t.Errorf("got %v want %v", createdAccResp.AccountData.Attributes.BankIDCode, "GBDSC")
 	}
 
 	account = NewDeleteAccount(createdAccResp.AccountData.ID, *createdAccResp.AccountData.Version, 30)
