@@ -110,19 +110,19 @@ func DoDelete(f Form3) (bool, error) {
 }
 
 // DoPing checks that a connection is available from the API
-func DoPing(f Form3) (bool, error) {
+func DoPing(f Form3) error {
 	return f.ping()
 }
 
-func (a Account) ping() (bool, error) {
+func (a Account) ping() error {
 	url := fmt.Sprintf("%s/%s/", os.Getenv("BASE_URL"), resource)
-	resp, err := a.Client.Get(url)
+	_, err := a.Client.Get(url)
 
 	if err != nil {
 		log.Println(err)
 	}
 
-	return resp.StatusCode == http.StatusOK, err
+	return nil
 }
 
 func (a Account) fetch() (http.Response, error) {

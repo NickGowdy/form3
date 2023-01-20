@@ -29,6 +29,13 @@ func main() {
 	}
 
 	acc := account.NewCreateAccount(1, "accounts", &accAttributes, 30)
+
+	err := account.DoPing(acc)
+
+	if err != nil {
+		log.Fatal("error connecting to API:", err)
+	}
+
 	accResponse, err := account.DoCreate(acc)
 
 	if err != nil {
