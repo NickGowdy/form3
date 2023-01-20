@@ -119,7 +119,7 @@ func (a Account) ping() (bool, error) {
 	resp, err := a.Client.Get(url)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	return resp.StatusCode == http.StatusOK, err
@@ -130,7 +130,7 @@ func (a Account) fetch() (http.Response, error) {
 	resp, err := a.Client.Get(url)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	return *resp, err
@@ -142,14 +142,12 @@ func (a Account) create() (http.Response, error) {
 	err := json.NewEncoder(b).Encode(&a.AccountCreateRequest)
 
 	if err != nil {
-		log.Fatal(err)
 		return http.Response{}, err
 	}
 
 	resp, err := a.Client.Post(url, "application/json", b)
 
 	if err != nil {
-		log.Fatal(err)
 		return http.Response{}, err
 	}
 
@@ -161,7 +159,6 @@ func (a Account) delete() (http.Response, error) {
 	req, err := http.NewRequest(http.MethodDelete, url, nil)
 
 	if err != nil {
-		log.Fatal(err)
 		return http.Response{}, err
 	}
 
@@ -184,7 +181,6 @@ func decode(err error, resp *http.Response) (AccountResponse, error) {
 	switch statusCode := resp.StatusCode; {
 	case statusCode > 399 && statusCode < 500:
 		if err = json.NewDecoder(resp.Body).Decode(&accErr); err != nil {
-			log.Fatal(err)
 			return acc, err
 		}
 
@@ -192,7 +188,6 @@ func decode(err error, resp *http.Response) (AccountResponse, error) {
 	}
 
 	if err != nil {
-		log.Fatal(err)
 		return acc, nil
 	}
 
